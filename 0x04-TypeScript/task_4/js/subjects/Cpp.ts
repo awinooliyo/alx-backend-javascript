@@ -1,5 +1,3 @@
-import { Subjects } from './Subject';
-
 namespace Subjects {
     export class Cpp extends Subject {
         getRequirements(): string {
@@ -7,10 +5,10 @@ namespace Subjects {
         }
 
         getAvailableTeacher(): string {
-            return this.teacher.experienceTeachingC > 0 ? `Available Teacher: ${this.teacher.firstName}` : 'No available teacher';
+            return this.teacher.experienceTeachingC > 0
+                ? `Available Teacher: ${this.teacher.firstName}`
+                : 'No available teacher';
         }
     }
 }
 
-// Exporting the Subjects namespace
-export { Subjects };

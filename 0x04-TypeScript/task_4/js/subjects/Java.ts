@@ -1,4 +1,5 @@
-import { Subjects } from './Subject';
+/// <reference path="./Teacher.ts" />
+/// <reference path="./Subject.ts" />
 
 namespace Subjects {
     export class Java extends Subject {
@@ -7,10 +8,9 @@ namespace Subjects {
         }
 
         getAvailableTeacher(): string {
-            return this.teacher.experienceTeachingJava > 0 ? `Available Teacher: ${this.teacher.firstName}` : 'No available teacher';
+            return this.teacher.experienceTeachingJava > 0
+                ? `Available Teacher: ${this.teacher.firstName}`
+                : 'No available teacher';
         }
     }
 }
-
-// Exporting the Subjects namespace
-export { Subjects };

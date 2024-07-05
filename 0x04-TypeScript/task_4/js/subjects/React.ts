@@ -1,5 +1,3 @@
-import { Subjects } from './Subject';
-
 namespace Subjects {
     export class React extends Subject {
         getRequirements(): string {
@@ -7,10 +5,9 @@ namespace Subjects {
         }
 
         getAvailableTeacher(): string {
-            return this.teacher.experienceTeachingReact > 0 ? `Available Teacher: ${this.teacher.firstName}` : 'No available teacher';
+            return this.teacher.experienceTeachingReact > 0
+                ? `Available Teacher: ${this.teacher.firstName}`
+                : 'No available teacher';
         }
     }
 }
-
-// Exporting the Subjects namespace
-export { Subjects };
