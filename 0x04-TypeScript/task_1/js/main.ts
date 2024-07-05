@@ -37,7 +37,15 @@ const firstDirector: Directors = {
   numberOfReports: 22
 };
 
+interface printTeacherFunction {
+  (firstName: string, lastName: string): string;
+};
+
+const printTeacher: printTeacherFunction = (firstName, lastName) => {
+  return `${firstName.charAt(0)}. ${lastName}`;
+};
+
 console.log(firstTeacher);
 console.log(secondTeacher);
 console.log(firstDirector);
-
+console.log(printTeacher("Elimuli", "Ekenya"));
