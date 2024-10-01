@@ -3,7 +3,8 @@ const fs = require('fs');
 
 /**
  * Counts the students in the csv data file.
- * @param {string} dataPath - The path to the csv.
+ *
+ * @param {string} dataPath the path to the csv.
  * @throws {Error} if the database can't be loaded.
  */
 function countStudents(dataPath) {
@@ -53,6 +54,6 @@ function countStudents(dataPath) {
     // If an error occurs, throw the specified error message
     throw new Error('Cannot load the database');
   }
-}
+};
 
 module.exports = countStudents;
