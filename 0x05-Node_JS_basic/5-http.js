@@ -1,37 +1,38 @@
 const http = require('http');
 const fs = require('fs');
-const path = require('path');
+
+const PORT = 1245;
+const HOST = 'localhost';
+const app = http.createServer();
+const DB_FILE = process.argv.length > 2 ? process.argv[2] : '';
 
 /**
- * Function that reads the database file and returns a Promise.
- * This function is adapted from `3-read_file_async.js`.
- * @param {string} dataPath - Path to the CSV database file.
- * @returns {Promise<string>} - Promise that resolves to the student list output.
+ * Counts the students in a CSV data file.
+ * @param {String} dataPath The path to the CSV data file.
+ * @returns {Promise<string>} A promise that resolves to a formatted string of the student count and list.
  */
 const countStudents = (dataPath) => new Promise((resolve, reject) => {
-  fs.readFile(dataPath, 'utf-8', (err, data) => {
+  if (!dataPath) {
+    reject(new Error('Cannot load the database'));
+  }
+
+  fs.readFile(dataPath, (err, data) => {
     if (err) {
       reject(new Error('Cannot load the database'));
       return;
     }
 
-    if (data) {
-      const fileLines = data
-        .toString('utf-8')
-        .trim()
-        .split('\n');
+    const reportParts = [];
+    const fileLines = data.toString('utf-8').trim().split('\n');
+    const studentGroups = {};
+    const dbFieldNames = fileLines[0].split(',');
+    const studentPropNames = dbFieldNames.slice(0, dbFieldNames.length - 1);
 
-      const studentGroups = {};
-      const dbFieldNames = fileLines[0].split(',');
-      const studentPropNames = dbFieldNames.slice(0, dbFieldNames.length - 1);
-
-      for (const line of fileLines.slice(1)) {
-        const studentRecord = line.split(',');
-        if (studentRecord.length < dbFieldNames.length) continue;
-
+    fileLines.slice(1).forEach((line) => {
+      const studentRecord = line.split(',');
+      if (studentRecord.length === dbFieldNames.length) {
         const studentPropValues = studentRecord.slice(0, studentRecord.length - 1);
         const field = studentRecord[studentRecord.length - 1];
-
         if (!studentGroups[field]) {
           studentGroups[field] = [];
         }
@@ -39,59 +40,77 @@ const countStudents = (dataPath) => new Promise((resolve, reject) => {
         const studentEntries = studentPropNames.map((propName, idx) => [propName, studentPropValues[idx]]);
         studentGroups[field].push(Object.fromEntries(studentEntries));
       }
+    });
 
-      const totalStudents = Object.values(studentGroups).reduce((prev, cur) => prev + cur.length, 0);
-      let result = `Number of students: ${totalStudents}\n`;
+    const totalStudents = Object.values(studentGroups).reduce((acc, group) => acc + group.length, 0);
+    reportParts.push(`Number of students: ${totalStudents}`);
 
-      for (const [field, group] of Object.entries(studentGroups)) {
-        const studentNames = group.map((student) => student.firstname).join(', ');
-        result += `Number of students in ${field}: ${group.length}. List: ${studentNames}\n`;
-      }
+    Object.entries(studentGroups).forEach(([field, group]) => {
+      reportParts.push(`Number of students in ${field}: ${group.length}. List: ${group.map((student) => student.firstname).join(', ')}`);
+    });
 
-      resolve(result.trim());
-    }
+    resolve(reportParts.join('\n'));
   });
 });
 
 /**
- * HTTP server that responds with different content based on the URL path.
- * @module 5-http
+ * Route handlers for the server.
  */
-const app = http.createServer((req, res) => {
-  if (req.url === '/') {
-    // If the URL path is '/', display the welcome message
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Hello Holberton School!');
-  } else if (req.url === '/students') {
-    // If the URL path is '/students', read the database and display the student list
-    const databasePath = process.argv[2];
+const SERVER_ROUTE_HANDLERS = [
+  {
+    route: '/',
+    handler(_, res) {
+      const responseText = 'Hello Holberton School!';
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Length', Buffer.byteLength(responseText));
+      res.statusCode = 200;
+      res.end(responseText);
+    },
+  },
+  {
+    route: '/students',
+    handler(_, res) {
+      const responseParts = ['This is the list of our students'];
 
-    if (!databasePath) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Database path not provided');
-      return;
-    }
+      countStudents(DB_FILE)
+        .then((report) => {
+          responseParts.push(report);
+          const responseText = responseParts.join('\n');
+          res.setHeader('Content-Type', 'text/plain');
+          res.setHeader('Content-Length', Buffer.byteLength(responseText));
+          res.statusCode = 200;
+          res.end(responseText);
+        })
+        .catch((err) => {
+          responseParts.push(err.message);
+          const responseText = responseParts.join('\n');
+          res.setHeader('Content-Type', 'text/plain');
+          res.setHeader('Content-Length', Buffer.byteLength(responseText));
+          res.statusCode = 500;
+          res.end(responseText);
+        });
+    },
+  },
+];
 
-    countStudents(databasePath)
-      .then((studentData) => {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(`This is the list of our students\n${studentData}`);
-      })
-      .catch((err) => {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end(err.message);
-      });
+/**
+ * Main request handler for the server.
+ */
+app.on('request', (req, res) => {
+  const routeHandler = SERVER_ROUTE_HANDLERS.find((route) => route.route === req.url);
+
+  if (routeHandler) {
+    routeHandler.handler(req, res);
   } else {
-    // If the URL is not recognized, return a 404 error
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.statusCode = 404;
+    res.setHeader('Content-Type', 'text/plain');
     res.end('Not Found');
   }
 });
 
-// Server listens on port 1245
-app.listen(1245, () => {
-  console.log('Server is listening on port 1245');
+// Start the server and listen on the specified port and host
+app.listen(PORT, HOST, () => {
+  console.log(`Server listening at http://${HOST}:${PORT}`);
 });
 
-// Export the app variable
 module.exports = app;
