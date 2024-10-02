@@ -20,7 +20,7 @@ function countStudents(dataPath) {
     }
 
     // Remove the first line (header) and filter out any empty entries
-    const students = lines.slice(1);
+    const students = lines.slice(1).filter(student => student.split(',').length >= 4);
 
     // Initialize a dictionary to store the students by field
     const fields = {};
@@ -28,17 +28,13 @@ function countStudents(dataPath) {
     // Iterate over each student and organize by field
     students.forEach(student => {
       const details = student.split(',');
+	  const firstName = details[0];
+	  const field = details[3];
 
-	  // Check for valid entries with 4 fields
-      if (details.length >= 4) {
-        const firstName = details[0];
-        const field = details[3];
-
-        if (!fields[field]) {
-          fields[field] = [];
-        }
-        fields[field].push(firstName);
+      if (!fields[field]) {
+        fields[field] = [];
       }
+      fields[field].push(firstName);
     });
 
     // Count the total number of students
