@@ -1,6 +1,7 @@
 const fs = require('fs');
+
 /**
- * Counts the students in a csv data file asynchornously.
+ * Counts the students in a csv data file asynchronously.
  * @param {string} dataPath The path to the CSV data file.
  */
 const countStudents = (dataPath) => new Promise((resolve, reject) => {
@@ -11,38 +12,36 @@ const countStudents = (dataPath) => new Promise((resolve, reject) => {
     }
 
     if (data) {
-      const fileLines = data
-        .toString('utf-8')
-        .trim()
-        .split('\n');
-
+      const fileLines = data.trim().split('\n');
       const studentGroups = {};
-	  // Get the header row
+
+      // Get the header row
       const dbFieldNames = fileLines[0].split(',');
-	  // Exclude the last column (field)
+      // Exclude the last column (field)
       const studentPropNames = dbFieldNames.slice(0, dbFieldNames.length - 1);
 
       // Iterate over each line (starting from the second line)
       for (const line of fileLines.slice(1)) {
         const studentRecord = line.split(',');
-		// Skip invalid/empty lines
-        if (studentRecord.length < dbFieldNames.length) continue;
 
-        // Student details
-        const studentPropValues = studentRecord.slice(0, studentRecord.length - 1);
-		// Field/department
-        const field = studentRecord[studentRecord.length - 1];
+        // Skip invalid/empty lines by wrapping the logic in an if statement
+        if (studentRecord.length >= dbFieldNames.length) {
+          // Student details
+          const studentPropValues = studentRecord.slice(0, studentRecord.length - 1);
+          // Field/department
+          const field = studentRecord[studentRecord.length - 1];
 
-        if (!studentGroups[field]) {
-          studentGroups[field] = [];
+          if (!studentGroups[field]) {
+            studentGroups[field] = [];
+          }
+
+          const studentEntries = studentPropNames
+          // Pair property names with values
+            .map((propName, idx) => [propName, studentPropValues[idx]]);
+          // Store as an object
+          studentGroups[field].push(Object.fromEntries(studentEntries));
         }
-
-        const studentEntries = studentPropNames
-		  // Pair property names with values
-          .map((propName, idx) => [propName, studentPropValues[idx]]);
-		//Store as an object
-        studentGroups[field].push(Object.fromEntries(studentEntries));
-      }
+      } // End of for loop
 
       // Calculate the total number of students
       const totalStudents = Object.values(studentGroups)
@@ -57,7 +56,7 @@ const countStudents = (dataPath) => new Promise((resolve, reject) => {
 
       resolve(true);
     }
-  });
+  }); // Close fs.readFile
 });
 
 module.exports = countStudents;
