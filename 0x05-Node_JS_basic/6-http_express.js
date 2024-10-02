@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
  * @type {Object}
  * @memberof module:4-http-express
  */
-app.listen(PORT, () =>{
+app.listen(PORT, () => {
   console.log(`Server listening ton PORT ${PORT}`);
 });
 
