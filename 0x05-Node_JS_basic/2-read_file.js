@@ -13,23 +13,23 @@ function countStudents(dataPath) {
     const data = fs.readFileSync(dataPath, 'utf-8');
 
     // Split the file into lines and filter out empty lines
-    const lines = data.split('\n').filter(line => line.trim() !== '');
+    const lines = data.split('\n').filter((line) => line.trim() !== '');
 
     if (lines.length === 0) {
       throw new Error('Cannot load the database');
     }
 
     // Remove the first line (header) and filter out any empty entries
-    const students = lines.slice(1).filter(student => student.split(',').length >= 4);
+    const students = lines.slice(1).filter((student) => student.split(',').length >= 4);
 
     // Initialize a dictionary to store the students by field
     const fields = {};
 
     // Iterate over each student and organize by field
-    students.forEach(student => {
+    students.forEach((student) => {
       const details = student.split(',');
-	  const firstName = details[0];
-	  const field = details[3];
+      const firstName = details[0];
+      const field = details[3];
 
       if (!fields[field]) {
         fields[field] = [];
@@ -45,11 +45,10 @@ function countStudents(dataPath) {
     for (const [field, students] of Object.entries(fields)) {
       console.log(`Number of students in ${field}: ${students.length}. List: ${students.join(', ')}`);
     }
-
   } catch (err) {
     // If an error occurs, throw the specified error message
     throw new Error('Cannot load the database');
   }
-};
+}
 
 module.exports = countStudents;
