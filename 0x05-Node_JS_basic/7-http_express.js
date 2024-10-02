@@ -40,17 +40,24 @@ const countStudents = (dataPath) => new Promise((resolve, reject) => {
         if (!studentGroups[field]) {
           studentGroups[field] = [];
         }
-
-        const studentEntries = studentPropNames.map((propName, idx) => [propName, studentPropValues[idx]]);
+        const studentEntries = studentPropNames.map(
+          (propName, idx) => [propName, studentPropValues[idx]],
+        );
         studentGroups[field].push(Object.fromEntries(studentEntries));
       }
     });
 
-    const totalStudents = Object.values(studentGroups).reduce((acc, group) => acc + group.length, 0);
+    const totalStudents = Object.values(studentGroups).reduce(
+      (acc, group) => acc + group.length, 0,
+    );
     reportParts.push(`Number of students: ${totalStudents}`);
 
     Object.entries(studentGroups).forEach(([field, group]) => {
-      reportParts.push(`Number of students in ${field}: ${group.length}. List: ${group.map((student) => student.firstname).join(', ')}`);
+      reportParts.push(
+        `Number of students in ${field}: ${group.length}. List: ${group
+          .map((student) => student.firstname)
+          .join(', ')}`,
+      );
     });
 
     resolve(reportParts.join('\n'));
