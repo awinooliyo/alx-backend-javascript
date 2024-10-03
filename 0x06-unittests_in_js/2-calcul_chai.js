@@ -9,7 +9,7 @@
  * @returns {number|string} The result of the operation, or "Error" if
  * the operation is division and b is rounded to 0
  */
-export function calculateNumber(type, a, b) {
+function calculateNumber(type, a, b) {
   const roundedA = Math.round(a);
   const roundedB = Math.round(b);
 
@@ -29,4 +29,4 @@ export function calculateNumber(type, a, b) {
   }
 }
 
-// module.exports = calculateNumber;
+module.exports = calculateNumber;

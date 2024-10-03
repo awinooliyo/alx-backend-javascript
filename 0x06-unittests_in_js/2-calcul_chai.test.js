@@ -1,7 +1,5 @@
-/* eslint-disable jest/expect-expect */
-/* eslint-disable jest/prefer-expect-assertions */
 const { expect } = require('chai');
-const calculateNumber = require('./2-calcul_chai');
+const calculateNumber = require('./2-calcul_chai.js');
 
 describe('calculateNumber', () => {
   describe('SUM', () => {
