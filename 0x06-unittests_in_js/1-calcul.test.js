@@ -25,8 +25,8 @@ describe('calculateNumber', () => {
   });
 
   it('returns Error when dividing by 0', () => {
-    assert.throws(() => calculateNumber('DIVIDE', 4, 0), Error);
-    assert.throws(() => calculateNumber('DIVIDE', -8, 0), Error);
+    assert.strictEqual(calculateNumber('DIVIDE', 4, 0), 'Error');
+    assert.strictEqual(calculateNumber('DIVIDE', -8, 0), 'Error');
   });
 
   it('throws an error when an invalid type is provided', () => {
