@@ -18,7 +18,7 @@ function calculateNumber(type, a, b) {
       return roundedA - roundedB;
     case 'DIVIDE':
       if (roundedB === 0) {
-        throw new Error('Cannot divide by zero');
+        throw new Error('Error');
 	  }
       return roundedA / roundedB;
 
