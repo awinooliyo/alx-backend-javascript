@@ -20,6 +20,10 @@ describe('calculateNumber', () => {
     assert.equal(calculateNumber('DIVIDE', 8, 2), 4);
   });
 
+  it('handles division by a negative', () => {
+    assert.equal(calculateNumber('DIVIDE', -1.4, 4.5), -0.2); 
+  });
+
   it('returns Error when dividing by 0', () => {
     assert.throws(() => calculateNumber('DIVIDE', 4, 0), Error);
     assert.throws(() => calculateNumber('DIVIDE', -8, 0), Error);
