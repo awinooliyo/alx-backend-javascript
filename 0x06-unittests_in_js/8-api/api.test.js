@@ -1,26 +1,19 @@
 const request = require('request');
-const { expect } = require('chai');
-const { app, server } = require('./api');  // Import both app and server
+const chai = require('chai');
+const expect = chai.expect;
 
 describe('Index page', () => {
-  const baseUrl = 'http://localhost:7865';
-
-  // Close the server after all tests are done
-  after(() => {
-    server.close();
-  });
-
-  it('should return status 200 for GET /', (done) => {
-    request.get(`${baseUrl}/`, (error, response, body) => {
+  it('should return status 200', (done) => {
+    request('http://localhost:7865', (error, response, body) => {
       expect(response.statusCode).to.equal(200);
-      done();
+      done();  // Let Mocha know the async call is complete
     });
   });
 
-  it('should return the correct message for GET /', (done) => {
-    request.get(`${baseUrl}/`, (error, response, body) => {
+  it('should return the correct message', (done) => {
+    request('http://localhost:7865', (error, response, body) => {
       expect(body).to.equal('Welcome to the payment system');
-      done();
+      done();  // Let Mocha know the async call is complete
     });
   });
 });

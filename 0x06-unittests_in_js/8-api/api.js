@@ -10,8 +10,8 @@ app.get('/', (req, res) => {
 
 // Start the server and listen on port 7865
 const port = 7865;
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`API available on localhost port ${port}`);
 });
 
-module.exports = { app, server };  // Export both the app and the server
+module.exports = app;
